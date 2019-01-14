@@ -1,0 +1,85 @@
+#这是李航《统计学习方法》第二章感知机中的2.2练习题
+#构建从训练数据集求解感知机模型的简单例子
+#我参考了 @amazingWu 的代码并对其加以注释
+#刚开始用github还没了解怎么导入代码等功能，我会在以后慢慢学习。
+
+import numpy as np
+
+#x = [3 3; 4 3; 1 1]; #数据集 3×2矩阵
+#y = [1; 1; -1]; #3×1矩阵
+
+def hypothesis(w,x,b):
+    a = np.dot(w, x.T) + b #感知机公式
+    a[a<=0] = -1    #决策
+    a[a>0] = 1
+    return a  #返回决策结果
+
+def training(x,y,eta):
+    sample_count = len(x)
+    feature_count = len(x[1])
+    w = np.zeros(feature_count) #参数w矩阵
+    b = 0;
+    miss = sum(hypothesis(w, x, b) != y) #错误数
+    i = 0
+    while miss > 0:
+        xi=x[i,:]
+        yi=y[i]
+        if ((np.dot(w, xi.T) + b)*yi <= 0):
+            w = w + eta * yi * xi  #更新参数w和b
+            b = b + eta * yi
+            print(w)
+            print(b)
+            print(hypothesis(w, x, b))
+            miss = sum(hypothesis(w, x, b) != y) #更新参数后的判断
+            print("miss:", miss)
+            print("---------")
+        else:
+            i = (i + 1) % sample_count #迭代次数
+    return w, b
+
+
+if __name__ == '__main__':
+    x = np.array([[3,3],[4,3],[1,1]])
+    y=np.array([1,1,-1])
+    (w, b) = training(x,y,0.1)
+    print(w)
+    print(b)
+    
+    运行结果
+    [0.3 0.3]
+0.1
+[1. 1. 1.]
+miss: 1
+---------
+[0.2 0.2]
+0.0
+[1. 1. 1.]
+miss: 1
+---------
+[0.1 0.1]
+-0.1
+[1. 1. 1.]
+miss: 1
+---------
+[2.77555756e-17 2.77555756e-17]
+-0.2
+[-1. -1. -1.]
+miss: 2
+---------
+[0.3 0.3]
+-0.1
+[1. 1. 1.]
+miss: 1
+---------
+[0.2 0.2]
+-0.2
+[1. 1. 1.]
+miss: 1
+---------
+[0.1 0.1]
+-0.30000000000000004
+[ 1.  1. -1.]
+miss: 0
+---------
+[0.1 0.1]
+-0.30000000000000004
